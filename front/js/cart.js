@@ -227,11 +227,11 @@ function verificationBeforeSend(){
     });
 
     fileEmail.addEventListener("change", () => {
-        if(!fileEmail.value.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)) {
-            errorEmail.innerText = "Votre mail n'est pas correct";
-            boolEmail = false;
-        } else if(fileEmail.value.match(/^\s*$/g)){
+        if(fileEmail.value.match(/^\s*$/g)) {
             errorEmail.innerText = "Ce champ est obligatoire";
+            boolEmail = false;
+        } else if(!fileEmail.value.match(/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/)){
+            errorEmail.innerText = "Votre mail n'est pas correct";
             boolEmail = false;
         } else {
             errorEmail.innerText = "";
@@ -241,16 +241,35 @@ function verificationBeforeSend(){
 
 
     //ajout du listener sur le bouton + envoi
-    btnSubmit.addEventListener("click", () => {
+    btnSubmit.addEventListener("click", (e) => {
+
+        e.preventDefault();
+
         let testBool = boolFirstName==true && boolLastName==true && boolAddress==true && boolCity==true && boolEmail==true;
 
-        if(fileFirstName.value == "" && fileLastName.value == "" && fileAddress.value == "" && fileCity.value == "" && fileEmail.value == ""){
+        if(products.length == 0){
+            alert("Votre panier est vide !");
+        }
+        else if(fileFirstName.value == "" && fileLastName.value == "" && fileAddress.value == "" && fileCity.value == "" && fileEmail.value == ""){
             errorFirstName.innerText = "Ce champ est obligatoire"; boolFirstName = false;
             errorLastName.innerText = "Ce champ est obligatoire"; boolLastName = false;
             errorAddress.innerText = "Ce champ est obligatoire"; boolAddress = false;
             errorCity.innerText = "Ce champ est obligatoire"; boolCity = false;
             errorEmail.innerText = "Ce champ est obligatoire"; boolEmail =false;
-        } else if(testBool == true){
+        } else if(fileFirstName.value == "" || fileLastName.value == "" || fileAddress.value == "" || fileCity.value == "" || fileEmail.value == ""){
+            if(fileFirstName.value == ""){
+                errorFirstName.innerText = "Ce champ est obligatoire"; boolFirstName = false;
+            } else if(fileLastName.value == ""){
+                errorLastName.innerText = "Ce champ est obligatoire"; boolLastName = false;
+            } else if(fileAddress.value == ""){           
+                errorAddress.innerText = "Ce champ est obligatoire"; boolAddress = false;
+            } else if(fileCity.value == ""){
+                errorCity.innerText = "Ce champ est obligatoire"; boolCity = false;
+            } else if(fileEmail.value == ""){
+                errorEmail.innerText = "Ce champ est obligatoire"; boolEmail =false;
+            }
+        }         
+        else if(testBool == true){
             contact = { 
                 firstName: fileFirstName.value,
                 lastName: fileLastName.value,
@@ -263,18 +282,21 @@ function verificationBeforeSend(){
 
             fetch("http://localhost:3000/api/products/order", {
                 method: "POST",
-                headers: {"Content-Type": "application/json" },
-                body: JSON.stringify(contact, products),
+                headers: {'Content-Type': 'application/json',
+                        'Accept' : 'application/json' },
+                body: JSON.stringify(data)
             })
             .then((res) => {
-                alert(data.products[0]);
-                res.json()
+                return res.json()
             })
             .then((res) => {
-                alert(res.orderId);
+                console.log(res.orderId);
                 //localStorage.setItem("articleStoredConfirm",JSON.stringify({cartContent, contact}));
-                //localStorage.setItem("articleStored", JSON.stringify([]));
-                window.location.href = "../html/confirmation.html" + res.orderId;
+                localStorage.setItem("articleStored", JSON.stringify([]));
+                window.location.href = "../html/confirmation.html?orderId=" + res.orderId;
+            })
+            .catch((error) => {
+                console.log(error);
             })
         }
     })

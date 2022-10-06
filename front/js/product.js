@@ -52,30 +52,37 @@ addToCart.addEventListener("click", () => {
     const quantity = document.querySelector("#quantity").value;
     const colorChoose = document.querySelector("#colors").options[document.querySelector('#colors').selectedIndex].text;
 
-    const newProduct = { // Objet créé pour sélectionner les informations produit qui seront à transmettre au localStorage
-      id: produit._id,
-      name: produit.name,
-      quantity: quantity,
-      color: colorChoose
-    };
-    
-    cartContent = Array.from(cartContent); //on force la mise en array
-
-    //On vérifie le tableau localStorage avant de mettre un item dedans
-    let alreadyInCart = cartContent.findIndex(item => item.id == newProduct.id && item.color == newProduct.color);
-
-    if(alreadyInCart == -1){
-        cartContent.push(newProduct);
+    if(colorChoose == "--SVP, choisissez une couleur --"){
+        alert("Vous n'avez pas choisis de couleur...");
+    } else if(quantity == 0) {
+        alert("Vous n'avez pas choisis de quantité...");
     } else {
-        cartContent[alreadyInCart].quantity = parseInt(cartContent[alreadyInCart].quantity);
-        newProduct.quantity = parseInt(newProduct.quantity);
-        cartContent[alreadyInCart].quantity += newProduct.quantity;
-    } 
+        const newProduct = { // Objet créé pour sélectionner les informations produit qui seront à transmettre au localStorage
+            id: produit._id,
+            name: produit.name,
+            quantity: quantity,
+            color: colorChoose
+        };
+          
+        cartContent = Array.from(cartContent); //on force la mise en array
+      
+        //On vérifie le tableau localStorage avant de mettre un item dedans
+        let alreadyInCart = cartContent.findIndex(item => item.id == newProduct.id && item.color == newProduct.color);
+      
+        if(alreadyInCart == -1){
+            cartContent.push(newProduct);
+        } else {
+            cartContent[alreadyInCart].quantity = parseInt(cartContent[alreadyInCart].quantity);
+            newProduct.quantity = parseInt(newProduct.quantity);
+            cartContent[alreadyInCart].quantity += newProduct.quantity;
+        } 
+      
+        // Puis on rajoute les éléments concernés dans le localStorage / Panier 
+        localStorage.setItem("articleStored", JSON.stringify(cartContent)); 
+      
+        //Affiche une alerte à chaque ajout
+        alert(newProduct.quantity + " " + newProduct.name +" ont été ajouter au panier");
+    }
 
-    // Puis on rajoute les éléments concernés dans le localStorage / Panier 
-    localStorage.setItem("articleStored", JSON.stringify(cartContent)); 
-
-    //Affiche une alerte à chaque ajout
-    alert(newProduct.quantity + " " + newProduct.name +" ont été ajouter au panier");
 });
 
