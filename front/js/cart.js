@@ -151,7 +151,6 @@ function verificationBeforeSend(){
         console.log(products)
     }
 
-
     //Création des booléen
     let boolFirstName = true;
     let boolLastName = true;
@@ -238,7 +237,6 @@ function verificationBeforeSend(){
             boolEmail = true;
         }
     });
-
 
     //ajout du listener sur le bouton + envoi
     btnSubmit.addEventListener("click", (e) => {
